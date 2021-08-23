@@ -1,0 +1,10 @@
+mutation($id: Int!, $complete: Boolean!, $updated: timestamptz) {
+  update_items(
+    where: { id: { _eq: $id } }
+    _set: { complete: $complete, updated: $updated }
+  ) {
+    returning {
+      id
+    }
+  }
+}
