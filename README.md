@@ -10,6 +10,14 @@ To do list app built with [Vue.js](https://www.google.com/url?sa=t&rct=j&q=&esrc
 - Sort completed items
 - Display number of completed items
 
+## UX objectives
+
+1. Clean and simple user interface
+2. Save and retrieve data automatically
+3. Helpful user interactions, for example:
+   - A loading indicator when waiting
+   - Moving completed items to the bottom
+
 ## Screenshot
 
 ![alt text](./screenshot.png "To do list")
@@ -17,15 +25,38 @@ To do list app built with [Vue.js](https://www.google.com/url?sa=t&rct=j&q=&esrc
 ## Requirements
 
 - [Node.js](https://nodejs.org/)
-- [npm - Node Package Manager](https://www.npmjs.com/)
+- [Node Package Manager (npm)](https://www.npmjs.com/)
+- GraphQL endpoint, e.g. [Hasura](https://hasura.io/)
+- Database, e.g. [Heroku](https://hasura.io/docs/latest/graphql/cloud/projects/create.html#new-database)
 
 ## Getting started
+
+Clone the repository
+
+```
+git clone https://github.com/tarpey/todo-vue
+```
+
+Install the dependencies
 
 ```
 yarn install
 ```
 
-Run development server
+Create a file to store local environment variables
+
+```
+touch .env.local
+```
+
+Add GraphQL endpoint and Hasura key
+
+```
+VUE_APP_GRAPHQL_HTTP=XXX
+VUE_APP_HASURA_ADMIN_SECRET=XXX
+```
+
+Run the development server
 
 ```
 yarn serve
