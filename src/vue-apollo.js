@@ -1,9 +1,12 @@
 import Vue from "vue";
 import VueApollo from "vue-apollo";
+import { HttpLink } from "apollo-link-http";
 import {
   createApolloClient,
   restartWebsockets,
 } from "vue-cli-plugin-apollo/graphql-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+require("dotenv").config();
 
 // Install the vue plugin
 Vue.use(VueApollo);
@@ -16,13 +19,20 @@ const httpEndpoint =
   process.env.VUE_APP_GRAPHQL_HTTP ||
   "https://native-lacewing-28.hasura.app/v1/graphql";
 
+const httpLink = new HttpLink({
+  uri: httpEndpoint,
+  headers: {
+    "x-hasura-admin-secret": process.env.VUE_APP_HASURA_ADMIN_SECRET,
+  },
+});
+
 // Config
 const defaultOptions = {
   // You can use `https` for secure connection (recommended in production)
   httpEndpoint,
   // You can use `wss` for secure connection (recommended in production)
   // Use `null` to disable subscriptions
-  wsEndpoint: process.env.VUE_APP_GRAPHQL_WS || "ws://localhost:4000/graphql",
+  wsEndpoint: null,
   // LocalStorage token
   tokenName: AUTH_TOKEN,
   // Enable Automatic Query persisting with Apollo Engine
@@ -36,10 +46,13 @@ const defaultOptions = {
   // Override default apollo link
   // note: don't override httpLink here, specify httpLink options in the
   // httpLinkOptions property of defaultOptions.
-  // link: myLink
+  defaultHttpLink: false,
+  link: httpLink,
 
   // Override default cache
-  // cache: myCache
+  cache: new InMemoryCache({
+    addTypename: false,
+  }),
 
   // Override the way the Authorization header is set
   // getAuth: (tokenName) => ...
@@ -65,7 +78,7 @@ export function createProvider(options = {}) {
     defaultClient: apolloClient,
     defaultOptions: {
       $query: {
-        // fetchPolicy: 'cache-and-network',
+        fetchPolicy: "cache-and-network",
       },
     },
     errorHandler(error) {
