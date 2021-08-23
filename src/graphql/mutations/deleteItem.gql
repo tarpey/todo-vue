@@ -1,0 +1,5 @@
+mutation($id: Int!) {
+  delete_items(where: { id: { _eq: $id } }) {
+    affected_rows
+  }
+}
