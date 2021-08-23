@@ -26,6 +26,9 @@ import TodoItem from "./TodoItem.vue";
 import GET_ITEMS from "../graphql/queries/getItems.gql";
 export default {
   computed: {
+    /**
+     * Method to calculate the total number of items and those that have been completed
+     */
     completedItems() {
       const itemsCompleted = this.items.filter((item) => item.complete === true)
         .length;

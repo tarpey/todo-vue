@@ -12,7 +12,7 @@
         class="border-2 rounded-full border-gray-400 w-6 h-6 flex flex-shrink-0 justify-center items-center mr-2"
       >
         <svg
-          class="fill-current hidden w-3 h-3  "
+          class="fill-current hidden w-3 h-3"
           version="1.1"
           viewBox="0 0 17 12"
           xmlns="http://www.w3.org/2000/svg"
@@ -65,37 +65,50 @@ import GET_ITEMS from "../graphql/queries/getItems.gql";
 import UPDATE_ITEM from "../graphql/mutations/updateItem.gql";
 import DELETE_ITEM from "../graphql/mutations/deleteItem.gql";
 export default {
-  name: "TodoItem",
   props: ["item", "index"],
   methods: {
+    /**
+     * Method to update an existing todo item
+     */
     updateTodo: function(item) {
-      const now = new Date();
+      const timestamp = new Date();
       this.$apollo
         .mutate({
           mutation: UPDATE_ITEM,
           variables: {
             id: item.id,
             complete: !item.complete,
-            updated: now,
+            updated: timestamp,
           },
           update: (cache, { data: { update_items } }) => {
             const data = cache.readQuery({
               query: GET_ITEMS,
             });
+            /**
+             * Update the item completion and timestamp
+             */
             const updatedItem = update_items.returning[0];
             updatedItem.complete = !this.item.complete;
-            updatedItem.updated = now;
-            data.items.sort(function(x, y) {
-              return x.complete - y.complete;
-            });
-            data.items.sort(function(a, b) {
-              return b.updated - a.updated;
-            });
+            updatedItem.updated = timestamp;
+            /**
+             * Sort items by completion and then timestamp
+             */
+            data.items
+              .sort(function(a, b) {
+                return a.complete - b.complete;
+              })
+              .sort(function(a, b) {
+                return b.updated - a.updated;
+              });
             cache.writeQuery({
               query: GET_ITEMS,
               data,
             });
           },
+          /**
+           * Optimistic mutation results
+           * Update the UI before your server responds
+           */
           optimisticResponse: {
             update_items: {
               returning: [
@@ -110,6 +123,9 @@ export default {
           console.error(error);
         });
     },
+    /**
+     * Method to delete an existing todo item
+     */
     deleteTodo: function(item) {
       this.$apollo.mutate({
         mutation: DELETE_ITEM,
@@ -121,6 +137,9 @@ export default {
             const data = cache.readQuery({
               query: GET_ITEMS,
             });
+            /**
+             * Update items to exclude the one deleted
+             */
             data.items = data.items.filter((i) => {
               return i.id !== item.id;
             });
@@ -130,6 +149,10 @@ export default {
             });
           }
         },
+        /**
+         * Optimistic mutation results
+         * Update the UI before your server responds
+         */
         optimisticResponse: {
           delete_items: {
             affected_rows: 1,

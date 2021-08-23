@@ -37,13 +37,19 @@ import ADD_ITEM from "../graphql/mutations/addItem.gql";
 export default {
   data() {
     return {
-      itemName: "",
-      error: "",
+      itemName: "", // The name of the item, default to blank
+      error: "", // Error text, default to blank
     };
   },
   methods: {
+    /**
+     * Method to add a new todo item
+     */
     addTodo() {
       if (!this.itemName || this.itemName.trim() === "") {
+        /**
+         * Display an error message if the item name is false or empty
+         */
         this.error = "You need to enter an item";
         return false;
       } else {
@@ -63,6 +69,9 @@ export default {
                 query: GET_ITEMS,
                 data,
               });
+              /**
+               * Reset the item and error text, then set the focus on the input field
+               */
               this.itemName = "";
               this.error = "";
               this.$refs.itemName.focus();
