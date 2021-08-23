@@ -1,0 +1,10 @@
+mutation($name: String!, $updated: timestamptz) {
+  insert_items(objects: { name: $name, updated: $updated }) {
+    returning {
+      id
+      name
+      complete
+      updated
+    }
+  }
+}
